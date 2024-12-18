@@ -1,0 +1,438 @@
+@layer base, rhythm, layout, components, default, overwrites;
+
+html {
+  /* Create a snapping rule on the html element */
+  scroll-snap-type: y mandatory;
+
+  /* Create a timeline scope, so we can target any element on the page */
+  timeline-scope: --section, --main, --site-header;
+}
+
+/* We'll want to match these colors for the best melty effect */
+/* But play around with them (and add a color to section) to see happens */
+body,
+.content {
+  background-color: #9CA29D;
+  
+}
+
+
+.section {
+  /* Creating a snapping rule on the section element */
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+
+  /* Attach the timeline to the section element*/
+  view-timeline: --section;
+
+  /* Set each section to the full dynamic height of the viewport */
+  height: 100dvh;
+}
+
+.content {
+  /* Fix the content, so it doesn't scroll with the section */
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+
+  /* Animate the content based on the section scrolling */
+  --contrast: 4;
+  --blur: 0.5rem;
+
+  animation: blink ease-in-out both;
+  animation-timeline: --section;
+}
+
+@keyframes blink {
+  0%,
+  100% {
+    filter: blur(var(--blur)) contrast(var(--contrast));
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  50% {
+    filter: blur(0) contrast(1);
+    opacity: 1;
+    visibility: visible;
+  }
+}
+
+/* 
+  This is a bit of a hack to get the indicator to work because I'm lazy.
+  We're translating the dot from the top to the bottom of its parent,
+  using the browser scroll position as the animation timeline.
+  It's not really matched up to the scrolling sections, only appears to be.
+*/
+.indicator::before {
+  animation: indicate linear both;
+  animation-timeline: --main;
+  animation-range: contain;
+}
+
+/* And we're manually setting the colors because see: lazy comment above */
+:root {
+  --color-primary: #2b4a33; /* Deep green */
+  --color-secondary: #579671; /* Light green */
+  --color-gold: #e7af00; /* Gold */
+  --color-Green: #497659; /* Green */
+  --color-Grey: #f4f6fc; /* Grey */
+}
+
+
+@keyframes indicate {
+  0% {
+    --color-indicator: var(--color-secondary);
+  }
+  25% {
+    --color-indicator: var(--color-secondary);
+  }
+  45% {
+    --color-indicator: var(--color-gold);
+  }
+  60% {
+    --color-indicator: var(--color-Green);
+  }
+  90% {
+    --color-indicator: var(--color-Grey);
+    transform: translateY(
+      calc(var(--indicator-total-height) - var(--indicator-size))
+    );
+  }
+}
+
+/* Remove gradient indicator on scroll-to-end (visible on small screens */
+
+.site-header label:last-of-type {
+  view-timeline: --site-header inline;
+}
+
+.site-header::after {
+  animation: fade-scroll ease-in-out both;
+  animation-timeline: --site-header;
+  animation-range: entry-crossing;
+}
+
+@keyframes fade-scroll {
+  0% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+  }
+}
+
+
+/* WIP */
+@keyframes zoom-scroll {
+  0% {
+    filter: blur(5rem);
+    transform: scale(0);
+    opacity: 0;
+    visibility: hidden;
+  }
+
+  50% {
+    filter: blur(0);
+    transform: none;
+    opacity: 1;
+    visibility: visible;
+  }
+
+  100% {
+    filter: blur(3rem);
+    transform: scale(1.5);
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+/* General Styling */
+body {
+  font-family: 'Lato', sans-serif;
+}
+
+h1, h2, h3 {
+  font-family: 'Montserrat', sans-serif;
+  font-weight: 700; /* Use the weight you prefer */
+}
+
+body {
+  margin: 0;
+  font-family: 'Montserrat', sans-serif;
+  background-color: #F4F6FC;
+}
+
+.custom-section {
+  background-color: #F4F6FC;
+  scroll-snap-type: y mandatory;
+  position: relative;
+  overflow: hidden;
+}
+
+.custom-section .section {
+  scroll-snap-align: start;
+  height: 100vh;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.custom-section .content {
+  color: var(--color-Green);
+  font-family: 'Lato', sans-serif;
+  text-align: left;
+  margin-right: 3rem; /* Pushes text left to avoid overlap */
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.custom-section h2 {
+  font-weight: 700;
+  font-size: rem;
+  margin-bottom: 1rem;
+}
+
+.custom-section p {
+  font-weight: 300;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  margin-right: 3rem; /* Pushes text left to avoid overlap */
+}
+
+/* Learn More Button */
+.learn-more {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-secondary);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.learn-more:hover {
+  background-color: var(--color-Green);
+}
+
+/* Scroll Indicator Styling */
+.scroll-indicator {
+  position: fixed;
+  right: 2rem; /* Adjust spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.scroll-indicator ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scroll-indicator li {
+  margin: 1rem 0;
+}
+
+.scroll-indicator a {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--color-Grey);
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Active Indicator Animation */
+.scroll-indicator a.active {
+  background-color: var(--color-indicator);
+  border-color: var(--color-indicator);
+}
+
+
+/* Color Indicator Animation */
+.indicator::before {
+  animation: indicate linear both;
+  animation-timeline: --main;
+}
+
+#animation-container .section .content {
+  display: flex; /* Enables Flexbox */
+  justify-content: space-between; /* Separates the h2 and p content */
+  align-items: center; /* Vertically aligns items */
+  padding: 2rem; /* Adds spacing inside the container */
+  flex-wrap: wrap; /* Ensures content wraps on smaller screens */
+}
+
+#animation-container .section h2 {
+  flex: 0 1 40%; /* Allocates 40% of the width to the h2 */
+  font-size: 5rem; /* Adjusts font size */
+  font-weight: 700; /* Bold weight */
+  color: #F4F6FC; /* Example color */
+  margin: 0; /* Removes default margin */
+  text-align: left; /* Aligns h2 text to the left */
+}
+
+#animation-container .section .text {
+  flex: 0 1 40%; /* Allocates 50% of the width to the paragraph */
+  font-size: 1rem;
+  color: #F4F6FC; /* Matches desired text color */
+  text-align: left; /* Aligns p text to the right */
+  line-height: 1.6; /* Improves readability */
+  margin: 0; /* Removes default margin */
+  margin-right: 3rem; /* Pushes text left to avoid overlap */
+}
+
+#animation-container .section .learn-more {
+  display: inline-block;
+  margin-top: 1rem; /* Adds spacing above the button */
+  padding: 0.5rem 1rem;
+  background-color: #579671; /* Button background */
+  color: white; /* Button text color */
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+#animation-container .section .learn-more:hover {
+  background-color: #2b4a33; /* Darker green on hover */
+}
+
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .custom-section .section {
+    height: auto;
+    padding: 2rem 1rem;
+  }
+
+  .custom-section .content {
+    text-align: center;
+    margin-right: 1rem; /* Adjusts margin for smaller screens */
+  }
+
+  .learn-more {
+    width: 100%;
+    padding: 0.75rem;
+  }
+}
+
+/* Set a consistent size for all images */
+#animation-container .section img {
+  width: 100%;
+  max-width: 500px; /* Set a consistent maximum width */
+  height: 300px; /* Set a consistent height */
+  object-fit: cover; /* Ensures the image fills the area without distortion */
+  border-radius: 1px; /* Optional: Adds rounded corners to images */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+  margin: 0 auto; /* Centers the image */
+}
+
+#animation-container .section img:hover {
+  transform: scale(1.1); /* Slightly enlarges the image */
+  transition: transform 0.3s ease; /* Smooth transition */
+}
+
+#animation-container .section .text {
+  display: flex; /* Activates flexbox */
+  flex-direction: column; /* Stacks content vertically */
+  align-items: center; /* Centers horizontally */
+  text-align: center; /* Centers text */
+}
+
+/* Set the Headlines and bolded text to correspond to the color of the keyframe */
+/* Default styles for strong and code */
+.section strong {
+  font-family: 'Montserrat', sans-serif;
+  font-style: italic;
+  font-weight: bold;
+  font-weight: 1,100;
+  color: var(--color-highlight); /* Default color */
+}
+
+.section code.property {
+  font-family: 'Lato', sans-serif;
+  font-weight: 400;
+  color: var(--color-selector); /* Default color */
+  font-style: normal;
+}
+
+/* Section-specific color overrides using nth-child */
+.section:nth-child(1) {
+  --color-highlight: #2b4a33; /* Deep green */
+  --color-selector: #579671;  /* Light green */
+}
+
+.section:nth-child(2) {
+  --color-highlight: #e7af00; /* Gold */
+  --color-selector: #497659;  /* Green */
+}
+
+.section:nth-child(3) {
+  --color-highlight: #579671; /* Light green */
+  --color-selector: #E3C644;  /* Grey */
+}
+
+.section:nth-child(4) {
+  --color-highlight: #e7af00; /* Gold for 2022/2023 */
+  --color-selector: #497659;  /* Green */
+}
+
+/* Styling Learn More links for consistency */
+.learn-more {
+  display: inline-block;
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background-color: var(--color-selector);
+  color: white;
+  text-decoration: none;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+}
+
+.learn-more:hover {
+  background-color: var(--color-highlight);
+}
+
+
+/* Scroll Indicator Styling */
+.scroll-indicator {
+  position: fixed;
+  right: 2rem; /* Adjust spacing */
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.scroll-indicator ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.scroll-indicator li {
+  margin: 1rem 0;
+}
+
+.scroll-indicator a {
+  display: block;
+  width: 1rem;
+  height: 1rem;
+  border: 2px solid var(--color-Grey);
+  border-radius: 50%;
+  background-color: transparent;
+  transition: background-color 0.3s, border-color 0.3s;
+}
+
+/* Active Indicator Animation */
+.scroll-indicator a.active {
+  background-color: var(--color-indicator);
+  border-color: var(--color-indicator);
+}
